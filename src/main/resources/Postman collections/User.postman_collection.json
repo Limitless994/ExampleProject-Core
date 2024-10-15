@@ -1,0 +1,161 @@
+{
+	"info": {
+		"_postman_id": "d65c7009-776c-4927-9044-8d8003c6a377",
+		"name": "User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12550591"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"admin@test.com\",\r\n  \"password\": \"test\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/public/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"public",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"john2\",\r\n  \"password\": \"test\",\r\n  \"firstName\": \"John\",\r\n  \"lastName\": \"Doe\",\r\n  \"email\": \"john2.doe@example.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/public/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"public",
+						"register"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8081/api/users/register \\\r\n-H \"Content-Type: application/json\" \\\r\n-d '{\r\n    \"name\": \"John\",\r\n    \"surname\": \"Doe\",\r\n    \"age\": 30,\r\n    \"email\": \"john.doe@example.com\",\r\n    \"password\": \"yourpassword\"\r\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "List",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIxRVlwSFMzZVFJMjVPUE5tMGRxVVgxa0owZFpNYWtMOGNWeE5USTVUSFRvIn0.eyJleHAiOjE3MjkwMDg2NTksImlhdCI6MTcyOTAwODM1OSwianRpIjoiODg1NTllNjctNWMyZi00MzRjLWJiMmYtMWEyNTJjMjFiZmU4IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9FeGFtcGxlUmVhbG0iLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFwaS1jbGllbnQiLCJicm9rZXIiLCJhY2NvdW50Il0sInN1YiI6IjdkY2E2OTFlLTkzNWMtNGRlZS1hOWZiLTA3ZTNjM2IwNzgzNSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImV4YW1wbGUtYXBwbGljYXRpb24tY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6IjJmOWViMTgwLTI1OGItNGM3OS05MDM3LWZiZGUzYmRlZDgyYiIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVzb3VyY2VfYWNjZXNzIjp7InJlYWxtLW1hbmFnZW1lbnQiOnsicm9sZXMiOlsidmlldy1yZWFsbSIsInZpZXctaWRlbnRpdHktcHJvdmlkZXJzIiwibWFuYWdlLWlkZW50aXR5LXByb3ZpZGVycyIsImltcGVyc29uYXRpb24iLCJyZWFsbS1hZG1pbiIsImNyZWF0ZS1jbGllbnQiLCJtYW5hZ2UtdXNlcnMiLCJxdWVyeS1yZWFsbXMiLCJ2aWV3LWF1dGhvcml6YXRpb24iLCJxdWVyeS1jbGllbnRzIiwicXVlcnktdXNlcnMiLCJtYW5hZ2UtZXZlbnRzIiwibWFuYWdlLXJlYWxtIiwidmlldy1ldmVudHMiLCJ2aWV3LXVzZXJzIiwidmlldy1jbGllbnRzIiwibWFuYWdlLWF1dGhvcml6YXRpb24iLCJtYW5hZ2UtY2xpZW50cyIsInF1ZXJ5LWdyb3VwcyJdfSwiYXBpLWNsaWVudCI6eyJyb2xlcyI6WyJ1bWFfcHJvdGVjdGlvbiJdfSwiZXhhbXBsZS1hcHBsaWNhdGlvbi1jbGllbnQiOnsicm9sZXMiOlsiQURNSU4iLCJVU0VSIl19LCJicm9rZXIiOnsicm9sZXMiOlsicmVhZC10b2tlbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsInZpZXctYXBwbGljYXRpb25zIiwidmlldy1jb25zZW50Iiwidmlldy1ncm91cHMiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsImRlbGV0ZS1hY2NvdW50IiwibWFuYWdlLWNvbnNlbnQiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJzaWQiOiIyZjllYjE4MC0yNThiLTRjNzktOTAzNy1mYmRlM2JkZWQ4MmIiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkFkbWluIEFkbWluIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWRtaW4iLCJnaXZlbl9uYW1lIjoiQWRtaW4iLCJmYW1pbHlfbmFtZSI6IkFkbWluIiwiZW1haWwiOiJhZG1pbkB0ZXN0LmNvbSJ9.S5CBGiRp_3RmMNf3kNwbKXUojSezod6kP3yoOVIWnqvLLEE9uMyw8V-zMseAW_VTvX1OCZ51MHgXhXzZ5Aewxv2Nfrt0fbxksByMP14mFFy432C2v6_bX5Vm3fg0C5BHQB8XWal0Av-73JqpudiOwFBSIJMXb1Bgz4vD9k-UCu0NCG0LiWkeBVyEzUtiSum1-fDKi7odlGnyCuuEA-Yyp9GMIqLFeB792JFRSMSDZh_HyAQViMQnpPR2e4rKHzsGq-K2-a_Fc9UFJW3m6CeF1yfOxXI18rO2whv_dC_dzXdzXrLWZzJCWYKDyzYTnFLnd2lh3WiVN5T-2a29Ky71ZQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"users"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8081/api/users/register \\\r\n-H \"Content-Type: application/json\" \\\r\n-d '{\r\n    \"name\": \"John\",\r\n    \"surname\": \"Doe\",\r\n    \"age\": 30,\r\n    \"email\": \"john.doe@example.com\",\r\n    \"password\": \"yourpassword\"\r\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "by id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIxRVlwSFMzZVFJMjVPUE5tMGRxVVgxa0owZFpNYWtMOGNWeE5USTVUSFRvIn0.eyJleHAiOjE3MjkwMDg2NTksImlhdCI6MTcyOTAwODM1OSwianRpIjoiODg1NTllNjctNWMyZi00MzRjLWJiMmYtMWEyNTJjMjFiZmU4IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9FeGFtcGxlUmVhbG0iLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFwaS1jbGllbnQiLCJicm9rZXIiLCJhY2NvdW50Il0sInN1YiI6IjdkY2E2OTFlLTkzNWMtNGRlZS1hOWZiLTA3ZTNjM2IwNzgzNSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImV4YW1wbGUtYXBwbGljYXRpb24tY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6IjJmOWViMTgwLTI1OGItNGM3OS05MDM3LWZiZGUzYmRlZDgyYiIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVzb3VyY2VfYWNjZXNzIjp7InJlYWxtLW1hbmFnZW1lbnQiOnsicm9sZXMiOlsidmlldy1yZWFsbSIsInZpZXctaWRlbnRpdHktcHJvdmlkZXJzIiwibWFuYWdlLWlkZW50aXR5LXByb3ZpZGVycyIsImltcGVyc29uYXRpb24iLCJyZWFsbS1hZG1pbiIsImNyZWF0ZS1jbGllbnQiLCJtYW5hZ2UtdXNlcnMiLCJxdWVyeS1yZWFsbXMiLCJ2aWV3LWF1dGhvcml6YXRpb24iLCJxdWVyeS1jbGllbnRzIiwicXVlcnktdXNlcnMiLCJtYW5hZ2UtZXZlbnRzIiwibWFuYWdlLXJlYWxtIiwidmlldy1ldmVudHMiLCJ2aWV3LXVzZXJzIiwidmlldy1jbGllbnRzIiwibWFuYWdlLWF1dGhvcml6YXRpb24iLCJtYW5hZ2UtY2xpZW50cyIsInF1ZXJ5LWdyb3VwcyJdfSwiYXBpLWNsaWVudCI6eyJyb2xlcyI6WyJ1bWFfcHJvdGVjdGlvbiJdfSwiZXhhbXBsZS1hcHBsaWNhdGlvbi1jbGllbnQiOnsicm9sZXMiOlsiQURNSU4iLCJVU0VSIl19LCJicm9rZXIiOnsicm9sZXMiOlsicmVhZC10b2tlbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsInZpZXctYXBwbGljYXRpb25zIiwidmlldy1jb25zZW50Iiwidmlldy1ncm91cHMiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsImRlbGV0ZS1hY2NvdW50IiwibWFuYWdlLWNvbnNlbnQiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJzaWQiOiIyZjllYjE4MC0yNThiLTRjNzktOTAzNy1mYmRlM2JkZWQ4MmIiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkFkbWluIEFkbWluIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWRtaW4iLCJnaXZlbl9uYW1lIjoiQWRtaW4iLCJmYW1pbHlfbmFtZSI6IkFkbWluIiwiZW1haWwiOiJhZG1pbkB0ZXN0LmNvbSJ9.S5CBGiRp_3RmMNf3kNwbKXUojSezod6kP3yoOVIWnqvLLEE9uMyw8V-zMseAW_VTvX1OCZ51MHgXhXzZ5Aewxv2Nfrt0fbxksByMP14mFFy432C2v6_bX5Vm3fg0C5BHQB8XWal0Av-73JqpudiOwFBSIJMXb1Bgz4vD9k-UCu0NCG0LiWkeBVyEzUtiSum1-fDKi7odlGnyCuuEA-Yyp9GMIqLFeB792JFRSMSDZh_HyAQViMQnpPR2e4rKHzsGq-K2-a_Fc9UFJW3m6CeF1yfOxXI18rO2whv_dC_dzXdzXrLWZzJCWYKDyzYTnFLnd2lh3WiVN5T-2a29Ky71ZQ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/api/users/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"users",
+						""
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8081/api/users/register \\\r\n-H \"Content-Type: application/json\" \\\r\n-d '{\r\n    \"name\": \"John\",\r\n    \"surname\": \"Doe\",\r\n    \"age\": 30,\r\n    \"email\": \"john.doe@example.com\",\r\n    \"password\": \"yourpassword\"\r\n}'"
+			},
+			"response": []
+		}
+	]
+}
