@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="local" type="Application" factoryName="Application">
+    <envs>
+      <env name="KEYCLOAK_BASE_URL" value="http://localhost:8080" />
+      <env name="KEYCLOAK_REALM" value="ExampleRealm" />
+      <env name="KEYCLOAK_AUTH_URL" value="/realms/ExampleRealm/protocol/openid-connect/token" />
+      <env name="KEYCLOAK_USERS_URL" value="/admin/realms/ExampleRealm/users" />
+      <env name="KEYCLOAK_CLIENT_ID" value="example-application-client" />
+      <env name="KEYCLOAK_CLIENT_SECRET" value="your-client-secret" />
+      <env name="KEYCLOAK_USERS_MANAGER_EMAIL" value="usersmanager@test.com" />
+      <env name="KEYCLOAK_USERS_MANAGER_PASSWORD" value="test" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.examplecode.core.CoreApplication" />
+    <module name="core" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

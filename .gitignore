@@ -1,4 +1,7 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
 /docker_volumes/
 /target/
-/.idea/
 /.mvn/
