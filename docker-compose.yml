@@ -2,21 +2,19 @@ version: '3.8'
 
 services:
 
-  # Nuovo database PostgreSQL per Keycloak
   keycloak-postgres:
     image: postgres:16.1
     environment:
-      POSTGRES_USER: keycloak              # Utente dedicato per Keycloak
-      POSTGRES_PASSWORD: keycloakpassword  # Password per il db Keycloak
-      POSTGRES_DB: keycloak                # Nome del database Keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloakpassword
+      POSTGRES_DB: keycloak
     ports:
-      - 5433:5432                          # Porta separata per evitare conflitti con l'altro DB
+      - 5433:5432
     volumes:
       - ./docker_volumes/keycloak_postgres:/var/lib/postgresql/data
     networks:
       - example-network
 
-  # Database PostgreSQL per l'applicazione
   postgres:
     image: postgres:16.1
     environment:
@@ -30,17 +28,16 @@ services:
     networks:
       - example-network
 
-  # Servizio Keycloak con il proprio database PostgreSQL dedicato
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.6
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres
-      KC_DB_URL_HOST: keycloak-postgres    # Nuovo host per il db Keycloak
-      KC_DB_URL_DATABASE: keycloak         # Nome del nuovo database Keycloak
+      KC_DB_URL_HOST: keycloak-postgres
+      KC_DB_URL_DATABASE: keycloak
       KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloakpassword     # Nuova password per il db Keycloak
+      KC_DB_PASSWORD: keycloakpassword
       KC_HOSTNAME: localhost
     ports:
       - 8080:8080
@@ -49,15 +46,14 @@ services:
     networks:
       - example-network
     depends_on:
-      - keycloak-postgres                  # Dipendenza dal nuovo database Keycloak
+      - keycloak-postgres
     command:
       - start-dev
 
-  # Servizio Spring Boot (Java App)
   app:
     build:
-      context: ./ # Utilizza il Dockerfile nella cartella del progetto
-      dockerfile: Dockerfile           # Nome del Dockerfile
+      context: ./
+      dockerfile: Dockerfile
     container_name: java-app
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres

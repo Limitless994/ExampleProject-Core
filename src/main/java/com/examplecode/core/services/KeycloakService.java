@@ -10,6 +10,6 @@ import java.util.List;
 public interface KeycloakService {
     AuthenticationResponseDto authenticate(AuthenticationDto authenticationDto);
     boolean registerUser(UserRegistrationDto userDto);
-    List<UserDto> getUsers(); // Nuovo metodo per ottenere la lista degli utenti
+    List<UserDto> getUsers();
     boolean deleteUser(String userId);
 }

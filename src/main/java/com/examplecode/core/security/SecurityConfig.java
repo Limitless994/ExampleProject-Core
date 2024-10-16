@@ -20,10 +20,8 @@ public class SecurityConfig {
         http.securityMatcher("/**")
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz-> authz.
-                                requestMatchers(HttpMethod.POST, "/public/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/public/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/users/**").hasAuthority("ROLE_ADMIN")
+                                requestMatchers("/public/**","/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/admin/**", "/users/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated());
 
         http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

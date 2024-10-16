@@ -23,7 +23,6 @@ public class UserController {
         this.keycloakService = keycloakService;
     }
 
-    // Endpoint per il login
     @PostMapping("/public/login")
     public ResponseEntity<AuthenticationResponseDto> login(@RequestBody AuthenticationDto authenticationDto) {
         AuthenticationResponseDto response = keycloakService.authenticate(authenticationDto);
@@ -42,7 +41,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User registration failed.");
         }
     }
-    // Endpoint per ottenere la lista degli utenti
     @GetMapping("/users")
     public ResponseEntity<List<UserDto>> getUsers() {
         List<UserDto> users = keycloakService.getUsers();
