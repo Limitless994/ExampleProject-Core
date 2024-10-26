@@ -12,4 +12,8 @@ public interface KeycloakService {
     boolean registerUser(UserRegistrationDto userDto);
     List<UserDto> getUsers();
     boolean deleteUser(String userId);
+    boolean updateUser(String userId, UserDto userDto);
+    String getCurrentUserId();
+    boolean isAdmin();
+
 }

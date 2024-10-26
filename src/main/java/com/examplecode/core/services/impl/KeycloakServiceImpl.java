@@ -8,6 +8,9 @@ import com.examplecode.core.services.KeycloakService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -15,23 +18,30 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import java.util.*;
 
 @Service
 public class KeycloakServiceImpl implements KeycloakService {
 
     private final RestTemplate restTemplate;
+    private final String keycloakBaseUrl = System.getenv("KEYCLOAK_BASE_URL");
+    private final String usersUrl = System.getenv("KEYCLOAK_USERS_URL");
+    private final String authUrl = System.getenv("KEYCLOAK_AUTH_URL");
 
     @Autowired
     public KeycloakServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
+    private String getCachedToken() {
+        return authenticate(new AuthenticationDto(
+                System.getenv("KEYCLOAK_USERS_MANAGER_EMAIL"),
+                System.getenv("KEYCLOAK_USERS_MANAGER_PASSWORD")
+        )).getAccessToken();
+    }
+
     @Override
     public AuthenticationResponseDto authenticate(AuthenticationDto authDto) {
-        // Crea i parametri per la richiesta al token endpoint di Keycloak
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("username", authDto.getUsername());
         requestParams.add("password", authDto.getPassword());
@@ -40,31 +50,26 @@ public class KeycloakServiceImpl implements KeycloakService {
         requestParams.add("client_secret", System.getenv("KEYCLOAK_CLIENT_SECRET"));
 
         try {
-            // Effettua la richiesta al server di Keycloak
-            ResponseEntity<String> response = restTemplate.postForEntity(System.getenv("KEYCLOAK_BASE_URL") + System.getenv("KEYCLOAK_AUTH_URL"), requestParams, String.class);
-
-            // Se la risposta è 2xx, deserializza il corpo in AuthenticationResponseDto
+            ResponseEntity<String> response = restTemplate.postForEntity(keycloakBaseUrl + authUrl, requestParams, String.class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 return objectMapper.readValue(response.getBody(), AuthenticationResponseDto.class);
             } else {
-                // Se non è un successo 2xx, ritorna un oggetto con messaggio di fallimento
                 return buildErrorResponse("Invalid credentials", response.getStatusCodeValue());
             }
         } catch (Exception e) {
-            // Log dell'errore e ritorno di un messaggio di errore personalizzato
             System.err.println("Authentication failed: " + e.getMessage());
             return buildErrorResponse("Authentication error", 500);
         }
     }
 
-    // Costruisce una AuthenticationResponseDto con un messaggio di errore
     private AuthenticationResponseDto buildErrorResponse(String message, int status) {
         AuthenticationResponseDto errorResponse = new AuthenticationResponseDto();
-        errorResponse.setAccessToken(message);  // Inserisci il messaggio nel campo accessToken (o un altro campo)
-        errorResponse.setExpiresIn(0L);         // Indica che il token non è valido impostando expiresIn a 0
+        errorResponse.setAccessToken(message);
+        errorResponse.setExpiresIn(0L);
         return errorResponse;
     }
+
     @Override
     public boolean registerUser(UserRegistrationDto userDto) {
         Map<String, Object> request = new HashMap<>();
@@ -80,17 +85,10 @@ public class KeycloakServiceImpl implements KeycloakService {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(authenticate(new AuthenticationDto(
-                    System.getenv("KEYCLOAK_USERS_MANAGER_EMAIL"),
-                    System.getenv("KEYCLOAK_USERS_MANAGER_PASSWORD")
-            )).getAccessToken());
+            headers.setBearerAuth(getCachedToken());
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
-
-            restTemplate.postForEntity(
-                    System.getenv("KEYCLOAK_BASE_URL") +
-                    System.getenv("KEYCLOAK_USERS_URL"),
-                    entity, Void.class);
+            restTemplate.postForEntity(keycloakBaseUrl + usersUrl, entity, Void.class);
             return true;
         } catch (HttpClientErrorException e) {
             System.err.println("Failed to register user: " + e.getResponseBodyAsString());
@@ -105,17 +103,13 @@ public class KeycloakServiceImpl implements KeycloakService {
     public List<UserDto> getUsers() {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + authenticate(new AuthenticationDto(
-                    System.getenv("KEYCLOAK_USERS_MANAGER_EMAIL"),
-                    System.getenv("KEYCLOAK_USERS_MANAGER_PASSWORD")
-            )).getAccessToken());
+            headers.set("Authorization", "Bearer " + getCachedToken());
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
             ResponseEntity<UserDto[]> response = restTemplate.exchange(
-                    System.getenv("KEYCLOAK_BASE_URL") + System.getenv("KEYCLOAK_USERS_URL"),
-                    HttpMethod.GET, entity, UserDto[].class);
+                    keycloakBaseUrl + usersUrl, HttpMethod.GET, entity, UserDto[].class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 return Arrays.asList(response.getBody());
@@ -126,30 +120,79 @@ public class KeycloakServiceImpl implements KeycloakService {
             return Collections.emptyList();
         }
     }
+
     @Override
     public boolean deleteUser(String userId) {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + authenticate(new AuthenticationDto(
-                    System.getenv("KEYCLOAK_USERS_MANAGER_EMAIL"),
-                    System.getenv("KEYCLOAK_USERS_MANAGER_PASSWORD")
-            )).getAccessToken());
+            headers.set("Authorization", "Bearer " + getCachedToken());
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            String deleteUserUrl = System.getenv("KEYCLOAK_BASE_URL") + System.getenv("KEYCLOAK_USERS_URL") + "/" + userId;
+            String deleteUserUrl = keycloakBaseUrl + usersUrl + "/" + userId;
 
             ResponseEntity<Void> response = restTemplate.exchange(
-                    deleteUserUrl,
-                    HttpMethod.DELETE,
-                    entity,
-                    Void.class);
+                    deleteUserUrl, HttpMethod.DELETE, entity, Void.class);
 
             return response.getStatusCode().is2xxSuccessful();
         } catch (HttpClientErrorException e) {
             return false;
         }
     }
-}
 
+    @Override
+    public boolean updateUser(String userId, UserDto userDto) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + getCachedToken());
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("firstName", userDto.getFirstName());
+            request.put("lastName", userDto.getLastName());
+            request.put("email", userDto.getEmail());
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
+
+            String updateUserUrl = keycloakBaseUrl + usersUrl + "/" + userId;
+
+            ResponseEntity<Void> response = restTemplate.exchange(
+                    updateUserUrl, HttpMethod.PUT, entity, Void.class);
+
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (HttpClientErrorException e) {
+            System.err.println("Failed to update user: " + e.getResponseBodyAsString());
+            return false;
+        } catch (RestClientException e) {
+            System.err.println("An error occurred during the update request: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public String getCurrentUserId() {
+        // Ottieni l'autenticazione corrente
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Verifica se l'autenticazione è di tipo JwtAuthenticationToken
+        if (authentication instanceof JwtAuthenticationToken) {
+            JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) authentication;
+            // Ottieni il token JWT
+            Jwt jwt = (Jwt) jwtAuth.getPrincipal(); // Puoi usare jwtAuth.getToken() se lo hai definito
+
+            // Estrai il claim "sub"
+            return (String) jwt.getClaims().get("sub"); // Cast al tipo corretto
+        }
+
+        return null; // Gestisci il caso in cui non ci sia un'ID utente
+    }
+
+    @Override
+    public boolean isAdmin() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+}

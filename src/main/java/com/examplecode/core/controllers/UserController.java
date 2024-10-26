@@ -22,7 +22,7 @@ public class UserController {
     public UserController(KeycloakService keycloakService) {
         this.keycloakService = keycloakService;
     }
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/public/login")
     public ResponseEntity<AuthenticationResponseDto> login(@RequestBody AuthenticationDto authenticationDto) {
         AuthenticationResponseDto response = keycloakService.authenticate(authenticationDto);
@@ -58,6 +58,15 @@ public class UserController {
             return new ResponseEntity<>("Utente eliminato con successo.", HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>("Errore durante l'eliminazione dell'utente.", HttpStatus.NOT_FOUND);
+        }
+    }
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<String> updateUser(@PathVariable String userId, @RequestBody UserDto userDto) {
+        boolean isUpdated = keycloakService.updateUser(userId, userDto);
+        if (isUpdated) {
+            return ResponseEntity.ok("User updated successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User update failed.");
         }
     }
 }
