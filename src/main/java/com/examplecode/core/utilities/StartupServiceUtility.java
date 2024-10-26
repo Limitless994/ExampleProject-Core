@@ -1,6 +1,7 @@
 package com.examplecode.core.utilities;
 
 import com.examplecode.core.dtos.ProductDto;
+import com.examplecode.core.dtos.UserDto;
 import com.examplecode.core.dtos.UserRegistrationDto;
 import com.examplecode.core.services.KeycloakService;
 import com.examplecode.core.services.ProductService;
@@ -13,6 +14,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Random;
 
 @Component
 public class StartupServiceUtility {
@@ -29,38 +31,38 @@ public class StartupServiceUtility {
     }
 
     @PostConstruct
-    public void initializeData() {
-        initializeUsers();
-        initializeProducts();
-    }
-
     private void initializeUsers() {
-        // Dati fittizi per la registrazione degli utenti
-        List<UserRegistrationDto> usersToRegister = List.of(
-                new UserRegistrationDto("user1","test", "first", "User", "user1@example.com" ),
-                new UserRegistrationDto("user2","test", "second", "User", "user2@example.com" ),
-                new UserRegistrationDto("user3","test", "third", "User", "user3@example.com" ),
-                new UserRegistrationDto("user4","test", "fourth", "User", "user4@example.com" )
-        );
+        try (InputStream inputStream = getClass().getResourceAsStream("/MocksJson/usersMock.json")) {
+            if (inputStream != null) {
+                List<UserRegistrationDto> usersToRegister = objectMapper.readValue(inputStream, new TypeReference<List<UserRegistrationDto>>() {});
 
-        for (UserRegistrationDto userDto : usersToRegister) {
-            boolean success = keycloakService.registerUser(userDto);
-            if (success) {
-                System.out.println("User registered successfully: " + userDto.getUsername());
-            } else {
-                System.err.println("Failed to register user: " + userDto.getUsername());
+                for (UserRegistrationDto userDto : usersToRegister) {
+                    boolean success = keycloakService.registerUser(userDto);
+                    if (success) {
+                        System.out.println("User registered successfully: " + userDto.getUsername());
+                    } else {
+                        System.err.println("Failed to register user: " + userDto.getUsername());
+                    }
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
+    @PostConstruct
     private void initializeProducts() {
-        try (InputStream inputStream = getClass().getResourceAsStream("/productsMock.json")) {
+        try (InputStream inputStream = getClass().getResourceAsStream("/MocksJson/productsMock.json")) {
             if (inputStream != null) {
                 List<ProductDto> products = objectMapper.readValue(inputStream, new TypeReference<List<ProductDto>>() {});
+                List<String> userIds = keycloakService.getUsers().stream()
+                        .map(UserDto::getId)
+                        .toList();
+
+                Random random = new Random();
                 for (ProductDto product : products) {
-                    // Imposta un ID utente predefinito (ad esempio, "user1") per il mock
-                    product.setUserId("user1"); // Puoi personalizzare l'ID utente come necessario
-                    productService.createProduct(product.getUserId(), product);
+                    String randomId = userIds.get(random.nextInt(userIds.size()));
+                    productService.createProduct(randomId, product);
                 }
             }
         } catch (IOException e) {
