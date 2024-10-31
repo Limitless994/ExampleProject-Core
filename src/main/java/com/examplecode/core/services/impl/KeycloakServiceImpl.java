@@ -19,6 +19,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class KeycloakServiceImpl implements KeycloakService {
@@ -111,8 +112,11 @@ public class KeycloakServiceImpl implements KeycloakService {
             ResponseEntity<UserDto[]> response = restTemplate.exchange(
                     keycloakBaseUrl + usersUrl, HttpMethod.GET, entity, UserDto[].class);
 
-            if (response.getStatusCode().is2xxSuccessful()) {
-                return Arrays.asList(response.getBody());
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return Arrays.stream(response.getBody())
+                        .filter(userDto -> !userDto.getEmail().equals("admin@test.com") &&
+                                !userDto.getEmail().equals("usersmanager@test.com"))
+                        .collect(Collectors.toList());
             } else {
                 return Collections.emptyList();
             }

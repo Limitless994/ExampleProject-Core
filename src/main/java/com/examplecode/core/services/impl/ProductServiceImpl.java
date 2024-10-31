@@ -42,9 +42,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean deleteProduct(String userId, Long productId) {
+    public boolean deleteProduct(Long productId) {
         Product product = productRepository.findById(productId)
-                .filter(p -> p.getUserId().equals(userId))
                 .orElse(null);
 
         if (product != null) {

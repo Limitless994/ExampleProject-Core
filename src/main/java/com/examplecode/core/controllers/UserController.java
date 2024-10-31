@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final KeycloakService keycloakService;
@@ -22,13 +23,15 @@ public class UserController {
     public UserController(KeycloakService keycloakService) {
         this.keycloakService = keycloakService;
     }
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/public/login")
     public ResponseEntity<AuthenticationResponseDto> login(@RequestBody AuthenticationDto authenticationDto) {
         AuthenticationResponseDto response = keycloakService.authenticate(authenticationDto);
-
+        if (response.getAccessToken() == null || response.getAccessToken().equals("Authentication error")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(response);
+        } else {
             return ResponseEntity.ok(response);
-
+        }
     }
 
     @PostMapping("/public/register")
@@ -36,7 +39,7 @@ public class UserController {
         boolean isRegistered = keycloakService.registerUser(userDto);
 
         if (isRegistered) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("User registered successfully.");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User registration failed.");
         }
